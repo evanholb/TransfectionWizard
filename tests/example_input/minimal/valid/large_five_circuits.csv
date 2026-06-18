@@ -1,0 +1,23 @@
+Circuit name,Transfection group,Contents,Concentration (ng/uL),DNA wanted (ng)
+Circuit1,X1,Csy4_rec_mNG,50,150
+Circuit1,X1,mKO2,50,100
+Circuit1,X2,eBFP2,50,100
+Circuit1,X2,Csy4,25,75
+Circuit1,Bias,PacBlue,100,200
+Circuit2,X1,CasE_rec_mMaroon,50,120
+Circuit2,X1,mNG,50,120
+Circuit2,X2,mKO2,50,100
+Circuit2,X2,CasE,60,140
+Circuit3,X1,PgU_rec_mKO2,45,110
+Circuit3,X1,mNG,50,100
+Circuit3,X2,mMaroon,55,130
+Circuit3,X2,PgU,50,100
+Circuit4,X1,Csy4_rec_PacBlue,40,100
+Circuit4,X1,mNG,50,100
+Circuit4,X2,eBFP2,50,100
+Circuit4,Bias,mKO2,60,150
+Circuit5,X1,PgU_rec_mNG,50,125
+Circuit5,X1,mKO2,50,125
+Circuit5,X2,mMaroon,50,100
+Circuit5,X2,CasE,45,110
+Circuit5,X2,PgU,55,140
