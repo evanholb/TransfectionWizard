@@ -246,7 +246,7 @@ class TestDilutedSourceAssignment:
             TRANSFECTION_GROUP: ['X1'],
             DNA_PART_NAME: ['mKO2'],
             CONCENTRATION: [100],
-            QUANTITY_DNA: [150],  # 150 < 200, needs dilution
+            QUANTITY_DNA: [150/2],  # 150 < 200, needs dilution
         })
 
         result = generate_layout(df, layout_key='24tube')
@@ -293,7 +293,7 @@ class TestDilutedSourceAssignment:
             TRANSFECTION_GROUP: ['X1', 'X1'],
             DNA_PART_NAME: ['mKO2', 'mNG'],  # Different parts
             CONCENTRATION: [100, 100],
-            QUANTITY_DNA: [150, 150],  # Both need dilution
+            QUANTITY_DNA: [150/2, 150/2],  # Both need dilution
         })
 
         result = generate_layout(df, layout_key='24tube')
@@ -310,7 +310,7 @@ class TestDilutedSourceAssignment:
             TRANSFECTION_GROUP: ['X1'],
             DNA_PART_NAME: ['mKO2'],
             CONCENTRATION: [100],
-            QUANTITY_DNA: [150],  # Needs dilution
+            QUANTITY_DNA: [150/2],  # Needs dilution
         })
 
         result = generate_layout(df, layout_key='96well', labware_config=labware_96well_minimal)
@@ -327,7 +327,7 @@ class TestDilutedSourceAssignment:
             TRANSFECTION_GROUP: ['X1', 'X1'],
             DNA_PART_NAME: ['mKO2', 'mNG'],
             CONCENTRATION: [100, 100],
-            QUANTITY_DNA: [150, 150],  # Both need dilution
+            QUANTITY_DNA: [150/2, 150/2],  # Both need dilution
             DILUTED_SOURCE: ['B3.4', ''],  # Manual assignment for mKO2
         })
 
