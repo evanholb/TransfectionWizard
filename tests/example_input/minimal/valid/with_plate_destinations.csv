@@ -1,0 +1,13 @@
+Circuit name,Transfection group,Plate destination,Contents,Concentration (ng/uL),DNA wanted (ng)
+CircuitA,X1,A1.1,mNG,75,150
+CircuitA,X2,A1.1,eBFP2,50,100
+CircuitA,X2,A1.1,Csy4,50,100
+CircuitB,X1,A2.1,Csy4_rec_mKO2,60,120
+CircuitB,X1,A2.1,mNG,50,100
+CircuitB,X2,A2.1,eBFP2,50,100
+CircuitB,X2,A2.1,CasE,40,80
+CircuitC,X1,A3.1,PgU_rec_mMaroon,55,140
+CircuitC,X1,A3.1,mNG,50,100
+CircuitC,X2,A3.1,eBFP2,50,100
+CircuitC,X2,A3.1,PgU,45,90
+CircuitC,Bias,A3.1,PacBlue,100,200

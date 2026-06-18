@@ -1,0 +1,5 @@
+Circuit name,Transfection group,Contents,Concentration (ng/uL),DNA wanted (ng)
+Csy4_SingleRegion,X1,Csy4,50,150
+Csy4_SingleRegion,X1,mKO2,50,100
+Csy4_SingleRegion,X2,Csy4_rec_mNeonGreen,50,100
+Csy4_SingleRegion,X2,eBFP2,50,100

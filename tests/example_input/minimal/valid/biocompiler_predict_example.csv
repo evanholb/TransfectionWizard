@@ -1,0 +1,7 @@
+Circuit name,Transfection group,Contents,Concentration (ng/uL),DNA wanted (ng)
+dual_ern_CasE_PgU,X1,eBFP2,50,100
+dual_ern_CasE_PgU,X1,CasE,50,50
+dual_ern_CasE_PgU,X1,PgU_rec_mNeonGreen,50,50
+dual_ern_CasE_PgU,X2,mKO2,50,100
+dual_ern_CasE_PgU,X2,PgU,50,150
+dual_ern_CasE_PgU,X2,CasE_rec_mNeonGreen,50,50

@@ -1,0 +1,11 @@
+{
+   "name": "Circuit1",
+   "description": "ng DNA = 500.0",
+   "content": [
+      {
+         "sources": [
+            {"plasmid": "mKO2"}
+         ]
+      }
+   ]
+}

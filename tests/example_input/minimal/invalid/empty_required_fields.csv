@@ -1,0 +1,4 @@
+Circuit name,Transfection group,Contents,Concentration (ng/uL),DNA wanted (ng)
+Circuit1,X1,mKO2,50,100
+Circuit1,X1,,50,100
+Circuit1,X2,Csy4,,50

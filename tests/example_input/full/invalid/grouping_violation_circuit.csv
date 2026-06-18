@@ -1,0 +1,4 @@
+Circuit name,Transfection group,DNA source,DNA destination,L3K/OM MM destination,Plate destination,Contents,Concentration,DNA wanted
+Circuit1,X1,A1.4,A1.5,A1.6,A1.2,mKO2,50,100
+Circuit1,X1,A2.4,A1.5,A1.6,A1.2,mNG,50,100
+Circuit1,X2,A3.4,A2.5,A2.6,A2.2,Csy4,50,100

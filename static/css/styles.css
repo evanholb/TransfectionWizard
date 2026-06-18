@@ -1,0 +1,27 @@
+/**
+ * Custom styles for Neuromorphic Wizard application
+ */
+
+/* Tab styling */
+.q-tab__label {
+    color: white;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+}
+
+/* Remove default padding/margins for flush layout */
+body,
+.q-page,
+.nicegui-content {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.q-page-container {
+    padding: 0 !important;
+}
+
+/* Hide upload file list */
+.q-uploader__list {
+    display: none !important;
+}

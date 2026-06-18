@@ -1,0 +1,63 @@
+[
+   {
+      "name": "Circuit1",
+      "description": "ng DNA = 450.0",
+      "content": [
+         {
+            "sources": [
+               {"plasmid": "Csy4rec_mNG", "ratio": 0.35},
+               {"plasmid": "mKO2", "ratio": 0.25}
+            ]
+         },
+         {
+            "sources": [
+               {"plasmid": "Csy4", "ratio": 0.15}
+            ]
+         },
+         {
+            "sources": [
+               {"plasmid": "PacBlue", "ratio": 0.25}
+            ]
+         }
+      ]
+   },
+   {
+      "name": "Circuit2",
+      "description": "ng DNA = 600.0",
+      "content": [
+         {
+            "sources": [
+               {"plasmid": "CasErec_mMaroon", "ratio": 0.3},
+               {"plasmid": "mNG", "ratio": 0.3}
+            ]
+         },
+         {
+            "sources": [
+               {"plasmid": "CasE", "ratio": 0.4}
+            ]
+         }
+      ]
+   },
+   {
+      "name": "Circuit3",
+      "description": "ng DNA = 540.0",
+      "content": [
+         {
+            "sources": [
+               {"plasmid": "mMaroon", "ratio": 0.25}
+            ]
+         },
+         {
+            "sources": [
+               {"plasmid": "Pgurec_mKO2", "ratio": 0.3},
+               {"plasmid": "Pgu", "ratio": 0.25}
+            ]
+         },
+         {
+            "sources": [
+               {"plasmid": "PguRec_CasErec_mNG", "ratio": 0.2}
+            ]
+         }
+      ]
+   }
+]

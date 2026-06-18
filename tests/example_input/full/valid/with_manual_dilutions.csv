@@ -1,0 +1,5 @@
+DNA source,DNA destination,L3K/OM MM destination,Plate destination,Diluted source,Contents,Concentration (ng/uL),DNA wanted (ng)
+A1.1,A1.2,A1.3,A1.1,B1.2,mKO2,500,100
+A2.1,A1.2,A1.3,A1.1,,mNG,50,100
+A3.1,A2.2,A2.3,A1.1,B2.2,eBFP2,400,100
+A4.1,A2.2,A2.3,A1.1,,CasE,10,100

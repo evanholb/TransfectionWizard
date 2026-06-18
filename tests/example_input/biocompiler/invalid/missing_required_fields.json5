@@ -1,0 +1,10 @@
+{
+   "description": "ng DNA = 500.0",
+   "content": [
+      {
+         "sources": [
+            {"plasmid": "mKO2", "ratio": 0.5}
+         ]
+      }
+   ]
+}

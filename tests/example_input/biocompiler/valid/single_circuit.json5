@@ -1,0 +1,22 @@
+{
+   "name": "Circuit1",
+   "description": "ng DNA = 525.0",
+   "content": [
+      {
+         "sources": [
+            {"plasmid": "Csy4rec_mNG", "ratio": 0.3},
+            {"plasmid": "mKO2", "ratio": 0.2}
+         ]
+      },
+      {
+         "sources": [
+            {"plasmid": "Csy4", "ratio": 0.15}
+         ]
+      },
+      {
+         "sources": [
+            {"plasmid": "PacBlue", "ratio": 0.35}
+         ]
+      }
+   ]
+}
