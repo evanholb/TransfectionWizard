@@ -19,7 +19,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1', 'DNA2', 'DNA3'],
             CONCENTRATION: [100, 50, 10],  # ng/µL
-            QUANTITY_DNA: [150, 200, 100]  # ng
+            QUANTITY_DNA: [150/2, 200/2, 100/2]  # ng
         })
 
         needs_dilution = detect_dilutions(df)
@@ -34,7 +34,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1', 'DNA2'],
             CONCENTRATION: [100, 100],  # ng/µL
-            QUANTITY_DNA: [200, 199]  # ng
+            QUANTITY_DNA: [200/2, 199/2]  # ng
         })
 
         needs_dilution = detect_dilutions(df)
@@ -48,7 +48,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1', 'DNA2'],
             CONCENTRATION: [50, 25],
-            QUANTITY_DNA: [500, 250],  # 10µL and 10µL respectively
+            QUANTITY_DNA: [500/2, 250/2],  # 10µL and 10µL respectively
         })
 
         needs_dilution = detect_dilutions(df)
@@ -60,7 +60,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1'],
             CONCENTRATION: [500],  # Very concentrated
-            QUANTITY_DNA: [100],   # Small amount wanted → 0.2µL
+            QUANTITY_DNA: [100/2],   # Small amount wanted → 0.2µL
         })
 
         needs_dilution = detect_dilutions(df)
@@ -82,7 +82,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1', 'DNA2', 'DNA3'],
             CONCENTRATION: [None, 50, 50],
-            QUANTITY_DNA: [100, None, 100],
+            QUANTITY_DNA: [100/2, None, 100/2],
         })
 
         needs_dilution = detect_dilutions(df)
@@ -93,7 +93,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1'],
             CONCENTRATION: [0],
-            QUANTITY_DNA: [100],
+            QUANTITY_DNA: [100/2],
         })
 
         needs_dilution = detect_dilutions(df)
@@ -115,7 +115,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['Part1', 'Part2', 'Part3', 'Part4', 'Part5'],
             CONCENTRATION: [100, 50, 200, 10, 75],
-            QUANTITY_DNA: [50, 150, 100, 100, 149],
+            QUANTITY_DNA: [50/2, 150/2, 100/2, 100/2, 149/2],
         })
 
         needs_dilution = detect_dilutions(df)
@@ -132,7 +132,7 @@ class TestDilutionDetection:
         df = pd.DataFrame({
             DNA_PART_NAME: ['DNA1', 'DNA2'],
             CONCENTRATION: ['invalid', 50],
-            QUANTITY_DNA: [100, 'invalid'],
+            QUANTITY_DNA: [100/2, 'invalid'],
         })
 
         needs_dilution = detect_dilutions(df)
