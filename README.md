@@ -54,6 +54,7 @@ App will be available in your browser at: `http://localhost:8080`
 
 ```bash
 conda activate fect_wiz
+cd TransfectionWizard
 python3 main.py
 ```
 
