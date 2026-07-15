@@ -120,7 +120,7 @@ def detect_dilutions(df: pd.DataFrame) -> pd.Series:
     Dilution is required when the volume needed is too small to pipette accurately.
     Volume = DNA_wanted (ng) / Concentration (ng/µL)
 
-    If volume < MIN_PIPETTE_VOLUME_UL (2µL), then dilution is required.
+    If volume < MIN_PIPETTE_VOLUME_UL (1µL), then dilution is required.
     This is equivalent to: DNA_wanted < MIN_PIPETTE_VOLUME_UL * Concentration
 
     Args:

@@ -115,11 +115,14 @@ LAYOUT_96WELL: Dict[str, Any] = {
         {'slot': 2, 'rows': ['A', 'B', 'C', 'D'], 'cols': list(range(1, 7)), 'labware_type': 'corning_24_wellplate_3.4ml_flat', 'required': True},
         {'slot': 3, 'rows': ['A', 'B', 'C', 'D'], 'cols': list(range(1, 7)), 'labware_type': 'corning_24_wellplate_3.4ml_flat', 'required': False},
     ],
-    'reagent_slots': ["D1.2", "D2.2", "D3.2", "D4.2", "D5.2", "D6.2"],
+    'reagent_slots': ["C6.2", "D1.2", "D2.2", "D3.2", "D4.2", "D5.2", "D6.2"],
     'reagent_labels': {
-        "D1.2": "H2O",
-        "D2.2": "L3K/P3K Mix",
+        "C6.2": "H2O",
+        "D1.2": "Empty tube",
+        "D2.2": "Empty tube",
+        "D3.2": "L3000",
         "D4.2": "P3000",
+        "D5.2": "Opti-MEM",
         "D6.2": "Opti-MEM"
     }
 }
