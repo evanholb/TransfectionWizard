@@ -64,7 +64,8 @@ class TemplateState:
     built_in: Dict[str, str] = field(default_factory=lambda: {
         'v3.8': 'data/OT2_automated_transfection_v3.8.py',
         'v3.9': 'data/OT2_automated_transfection_v3.9.py',
-        '96-well': 'data/OT2_automated_transfection_test96well_format.py'
+        '96-well': 'data/OT2_automated_transfection_test96well_format.py',
+        '96-well P3000 first': 'data/OT2_automated_transfection_test96well_format_P3000 first.py'
     })
     custom: Dict[str, str] = field(default_factory=dict)
     active: str = 'v3.9'
