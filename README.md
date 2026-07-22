@@ -30,7 +30,7 @@ TransfectionWizard streamlines the process of designing & configuring DNA geneti
 
 ```bash
 # 1. Download the app and cd into that folder
-git clone git@github.com:evanholb/TransfectionWizard.git
+git clone https://github.com/evanholb/TransfectionWizard.git
 cd TransfectionWizard
 
 # 2. Create a new virtual environment with conda:
