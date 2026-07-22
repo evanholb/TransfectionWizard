@@ -30,7 +30,7 @@ TransfectionWizard streamlines the process of designing & configuring DNA geneti
 
 ```bash
 # 1. Download the app and cd into that folder
-git clone https://github.com/evanholb/TransfectionWizard.git
+git clone git@github.com:evanholb/TransfectionWizard.git
 cd TransfectionWizard
 
 # 2. Create a new virtual environment with conda:
@@ -54,7 +54,6 @@ App will be available in your browser at: `http://localhost:8080`
 
 ```bash
 conda activate fect_wiz
-cd TransfectionWizard
 python3 main.py
 ```
 
@@ -90,7 +89,7 @@ Run Opentrons Simulator and review the logs directly in the app.
 - **Biocompiler Format (.json5)** - Circuit format for prediction tools
 - **Opentrons Protocol (.py)** - Robot-ready script
 
-**Step 5: Predict**
+**Step 5: Predict (not implemented)**
 
 Switch to the **Predict** tab to:
 - Select a circuit from your design
@@ -220,7 +219,7 @@ The application automatically determines when DNA dilution is required and assig
 
 Dilution is required when the pipetting volume would be too small for accurate handling:
 
-**Formula:** `DNA_wanted (ng) < MIN_PIPETTE_VOLUME (1 µL) × Concentration (ng/µL)`
+**Formula:** `DNA_wanted (ng) < MIN_PIPETTE_VOLUME (2 µL) × Concentration (ng/µL)`
 
 **Example:**
 - DNA wanted: 100 ng
@@ -425,4 +424,4 @@ All tests should pass before committing changes. The test suite validates:
 
 ---
 
-**Last Updated**: July 2026
+**Last Updated**: December 2025

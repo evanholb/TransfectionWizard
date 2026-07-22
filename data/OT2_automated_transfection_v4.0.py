@@ -6,13 +6,19 @@ import csv
 
 # metadata
 metadata = {
-    "protocolName": "Protocol_v3.9_test96welllayout",
+    "protocolName": "Protocol_v4.0",
     "author": "Evan Holbrook <evanholb@mit.edu>",
-    "description": "Automates all steps in the 3-step transfection protocol: i) mix DNA; ii) prepare P3000/L3000; iii) transfect cells. Designed for use with up to 3 OT-2 tube racks (72 tube max)."
+    "description": "Automated transfection protocol:  Designed for use with up to 2 OT-2 tube racks (41 tube max), 1 96 well plate (96 transfections), and 2 24-well cell culture plates."
 }
 
 # requirements
 requirements = {"robotType": "OT-2", "apiLevel": "2.19"}
+
+
+# specify starting pipette tips e.g. 'A3'
+
+right_start = 'A1'
+left_start = 'A1'
 
 # for the OT-2 speaker
 import subprocess 
@@ -37,42 +43,25 @@ Excess = 1.2 # excess multiplier for pipetting error
 
 # csv import
 # See https://docs.google.com/spreadsheets/d/1kNe_YEnk-sQBAQ1Gp-82OicvIDbjyB7sQ7VMvBwP4zU/edit?usp=sharing
-csv_raw = '''DNA source,DNA destination,L3K/OM MM destination,Plate destination,Transfection type,Contents,Concentration (ng/uL),DNA wanted (ng)
-A1.1,A1.3,B1.3,A1.1,Co,mKO2,50,100,
-A2.1,A1.3,B1.3,A1.1,Co,CasE_rec_mNeonGreen,50,100,
-A3.1,A2.3,B2.3,A1.1,Co,PgU,50,150,
-A4.1,A2.3,B2.3,A1.1,Co,eBFP2,50,100,
-A2.1,A2.3,B2.3,A1.1,Co,CasE_rec_mNeonGreen,50,100,
-A5.1,A3.3,B3.3,A1.1,Co,PgU_rec_mNeonGreen,50,50,
-A6.1,A3.3,B3.3,A1.1,Co,CasE,50,50,
-B1.1,A4.3,B4.3,A2.1,Co,CasE_rec_mMaroon,50,120,
-B2.1,A4.3,B4.3,A2.1,Co,mNG,50,120,
-A1.1,A5.3,B5.3,A2.1,Co,mKO2,50,100,
-A6.1,A5.3,B5.3,A2.1,Co,CasE,60,140,
-B3.1,A6.3,B6.3,A3.1,Co,PgU_rec_mKO2,45,110,
-B2.1,A6.3,B6.3,A3.1,Co,mNG,50,100,
-B4.1,A7.3,B7.3,A3.1,Co,mMaroon,55,130,
-A3.1,A7.3,B7.3,A3.1,Co,PgU,50,100,
-B5.1,A8.3,B8.3,A4.1,Co,Csy4_rec_PacBlue,40,100,
-B2.1,A8.3,B8.3,A4.1,Co,mNG,50,100,
-A4.1,A9.3,B9.3,A4.1,Single,eBFP2,50,100,
-A1.1,A10.3,B10.3,A4.1,Single,mKO2,60,150,
-B6.1,A11.3,B11.3,A5.1,Co,PgU_rec_mNG,50,125,
-A1.1,A11.3,B11.3,A5.1,Co,mKO2,50,125,
-B4.1,A12.3,B12.3,A5.1,Co,mMaroon,50,100,
-A6.1,A12.3,B12.3,A5.1,Co,CasE,45,110,
-A3.1,A12.3,B12.3,A5.1,Co,PgU,55,140,
+csv_raw = '''DNA source,DNA destination,L3K/OM MM destination,Plate destination,Transfection type,Contents,Concentration (ng/uL),DNA wanted (ng),Diluted source
 '''
 
 csv_data = csv_raw.splitlines()
 csv_reader = csv.DictReader(csv_data)
 
 # initialize lists - csv_reader is a dictionary, so I'm using lists here because I need indexing power
-DNA_sources_, DNA_dests_, L3K_dests_, plate_dests,transfection_types,transfection_types_, tube_names, uL_DNA_, uL_OM_, uL_P3K_, uL_L3K_ = [],[],[],[],[],[],[],[],[],[],[]
+DNA_sources_, dilutions, DNA_dests_, L3K_dests_, plate_dests,transfection_types,transfection_types_, tube_names, uL_DNA_, uL_OM_, uL_P3K_, uL_L3K_ = [],[],[],[],[],[],[],[],[],[],[],[]
 
 for a in csv_reader:
     # convert parts of csv_reader, which is a dictionary, to a list which has indices
-    DNA_sources_.append(a['DNA source'])
+    
+    if a['Diluted source'] != '':
+        dilutions.append([a['DNA source'], a['Diluted source'], a['Concentration (ng/uL)'], a['DNA wanted (ng)']])
+        DNA_sources_.append(a['Diluted source'])
+
+    else:
+        DNA_sources_.append(a['DNA source'])
+        
     DNA_dests_.append(a['DNA destination'])
     L3K_dests_.append(a['L3K/OM MM destination'])
     plate_dests.append(a['Plate destination'])
@@ -109,22 +98,46 @@ for a in range(len(DNA_sources_)):
             P3K_volume += uL_P3K_[c]
             L3K_volume += uL_L3K_[c]
 
-        DNA_sources.append(DNA_sources_[a])
-        DNA_dests.append(DNA_dests_[a])
-        L3K_dests.append(L3K_dests_[a])
-        transfection_types.append(transfection_types_[a])
-        
-        uL_DNA.append(DNA_volume)
+        # If volume is below pipette limit, set to pipette limit + excess and set diluted source
+        if DNA_volume < 1:
+            DNA_volume = 1 * Excess
+            uL_DNA.append(DNA_volume)
+
+        else:
+            uL_DNA.append(DNA_volume)
+
+
         uL_OM.append(OM_volume)
         uL_P3K.append(P3K_volume)
         uL_L3K.append(L3K_volume)
 
-# raise SystemExit if any DNA volumes are too small (< 1 uL)
-for a in range(len(uL_DNA)):
-    if uL_DNA[a] < 1:
-        print('DNA concentration in tube', tube_names[a], 'is too high (volume required is below the minimum of 1 uL). Please dilute DNA so at least 1 uL can be used.')
-        raise SystemExit('Program halted. See above for details.')
+        DNA_sources.append(DNA_sources_[a])
+        DNA_dests.append(DNA_dests_[a])
+        L3K_dests.append(L3K_dests_[a])
+        transfection_types.append(transfection_types_[a])
 
+# Build A1, B1, C1, ... H12 in column-major order (matches well iteration order)
+def well_choices():
+    rows = "ABCDEFGH"
+    cols = range(1, 13)
+    return [{"display_name": f"{r}{c}", "value": f"{r}{c}"} for c in cols for r in rows]
+
+
+def add_parameters(parameters: protocol_api.ParameterContext):
+    parameters.add_str(
+        variable_name="right_start",
+        display_name="P300 starting tip",
+        description="Well of the first available tip for the right pipette (300 uL).",
+        choices=well_choices(),
+        default="A1",
+    )
+    parameters.add_str(
+        variable_name="left_start",
+        display_name="P20 starting tip",
+        description="Well of the first available tip for the left pipette (20 uL).",
+        choices=well_choices(),
+        default="A1",
+    )
 
 # protocol run function
 def run(protocol: protocol_api.ProtocolContext):
@@ -173,25 +186,161 @@ def run(protocol: protocol_api.ProtocolContext):
         "p20_single_gen2", mount="left", tip_racks=[tiprack2,tiprack4]
     )
 
+    # pull the values from protocol.params
+    right_start = protocol.params.right_start
+    left_start = protocol.params.left_start
+
+    # load starting pipette tips
+    right_pipette.starting_tip = tiprack1.well(right_start)
+    left_pipette.starting_tip = tiprack2.well(left_start)
+    
+
     # specify custom pipette parameters
     right_pipette.flow_rate.aspirate = 250 #in uL/sec
     right_pipette.flow_rate.dispense = 250 #in uL/sec
     left_pipette.flow_rate.aspirate = 20 #in uL/sec
     left_pipette.flow_rate.dispense = 20 #in uL/sec
+        
+    right_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
+    right_pipette.well_bottom_clearance.dispense = 0.5 #clearance in mm from bottom of tube when dispensing
+    left_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
+    left_pipette.well_bottom_clearance.dispense = 0.5 #clearance in mm from bottom of tube when dispensing
 
     # below are commands:
 
+    ##############################################################################################################################################################
+
+    # Step 0) dilute DNA if necessary
 
     ##############################################################################################################################################################
 
-    # Step 1) Adding OM/P3000 master mix to DNA tubes
+    for a in range(len(dilutions)):
+        desired_concentration = float(dilutions[a][-1])
+
+        # make 10 uL working stock
+        source_DNA_vol = (desired_concentration*10)/float(dilutions[a][2])
+        water_vol = 10 - source_DNA_vol
+
+        # Add water to slot on tuberack3 (96 well plate)
+        left_pipette.transfer(
+            volume = water_vol,
+            source = tuberack2['C6'],
+            dest = tuberack3[dilutions[a][1].split('.')[0]],
+            blow_out = True,
+            blowout_location = 'destination well',
+            new_tip = 'always'
+            )
+
+        # Add DNA to slot on tuberack3 (96 well plate)
+        left_pipette.transfer(
+            volume = source_DNA_vol,
+            source = tuberack3[dilutions[a][0].split('.')[0]],
+            dest = tuberack3[dilutions[a][1].split('.')[0]],
+            mix_before = (3,20), # mixes source well before aspiration 3 times with 20 uL volume
+            mix_after = (3,5),
+            blow_out = True,
+            blowout_location = 'destination well',
+            new_tip = 'always'
+            )      
 
     ##############################################################################################################################################################
+
+    # Step 1) transfer DNA from source tubes to destination tubes
+    
+    ##############################################################################################################################################################
+
+    count = 0
+    for a in range(len(uL_DNA)):
+        source_well = DNA_sources[a].split('.')[0]
+        destination_well = DNA_dests[a].split('.')[0]
+        source_rack = DNA_sources[a].split('.')[-1]
+        dest_rack = DNA_dests[a].split('.')[-1]
+        DNA_vol = uL_DNA[a]
+
+        if source_rack == '1':
+            source = tuberack1[source_well]
+        elif source_rack == '2':
+            source = tuberack2[source_well]
+        elif source_rack == '3':
+            source = tuberack3[source_well]
+
+        if dest_rack == '1':
+            dest = tuberack1[destination_well]
+        elif dest_rack == '2':
+            dest = tuberack2[destination_well]
+        elif dest_rack == '3':
+            dest = tuberack3[destination_well]
+
+
+        # mix DNA for tubes that have cotransfections before adding P3K MM
+        try:
+            trans_type = transfection_types[count]
+        except:
+            trans_type = 'blah'
+
+        # if/else to deal with co-transfections
+        try:
+            if trans_type == 'Co' and DNA_dests[count+1] != DNA_dests[count]:            
+                mix_param = (3,20)
+                   
+            else:
+                mix_param = (0,0)
+
+        except:
+            if trans_type == 'Co' and count == len(DNA_dests)-1:
+                mix_param = (3,20)
+
+            else:
+                mix_param = (0,0)
+
+        # figure out whether a DNA source tube needs to be mixed or not
+        past_tubes = DNA_sources[0:a]
+        if DNA_sources[a] in past_tubes:
+            mix_param_before = (0,0)
+        elif DNA_sources[a] not in past_tubes:
+            mix_param_before = (3,20)
+            
+        count += 1
+
+        # if/else for choosing the appropriate pipette to use
+        if DNA_vol > 20:
+            right_pipette.transfer(
+                volume = DNA_vol,
+                source = source,
+                dest = dest,
+                mix_before = mix_param_before, # mixes source well before aspiration 3 times with 20 uL volume
+                mix_after = mix_param,
+                blow_out = True,
+                blowout_location = 'destination well',
+                new_tip = 'always'
+                ) 
+
+        else:
+            left_pipette.transfer(
+                volume = DNA_vol,
+                source = source,
+                dest = dest,
+                mix_before = mix_param_before, # mixes source well before aspiration 3 times with 20 uL volume
+                mix_after = mix_param,
+                blow_out = True,
+                blowout_location = 'destination well',
+                new_tip = 'always'
+                )    
+
+    # pause robot to allow time to get OM and P3K
+    #test_speaker() ##############################################################################################################################################################
+
 
     right_pipette.well_bottom_clearance.aspirate = 0.5 #clearance in mm from bottom of tube when aspirating
     right_pipette.well_bottom_clearance.dispense = 0.5 #clearance in mm from bottom of tube when dispensing
     left_pipette.well_bottom_clearance.aspirate = 0.5 #clearance in mm from bottom of tube when aspirating
     left_pipette.well_bottom_clearance.dispense = 0.5 #clearance in mm from bottom of tube when dispensing
+    
+    ##############################################################################################################################################################
+
+    # Step 2) Adding OM/P3000 master mix to DNA tubes
+
+    ##############################################################################################################################################################
 
     # figure out total reagent volumes needed
     OM_MM_vol = sum(uL_OM)*1.2
@@ -233,7 +382,7 @@ def run(protocol: protocol_api.ProtocolContext):
             new_tip = 'always'
             )
 
-    if OM_MM_vol > 200:
+    elif OM_MM_vol > 200:
         right_pipette.transfer(
             volume = OM_MM_vol,
             source = tuberack2['D6'],
@@ -255,16 +404,7 @@ def run(protocol: protocol_api.ProtocolContext):
             new_tip = 'always'
             )
 
-    # distribute OM/P3K MM to empty tubes
-
-    right_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
-    right_pipette.well_bottom_clearance.dispense = 0.1 #clearance in mm from bottom of tube when dispensing
-    left_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
-    left_pipette.well_bottom_clearance.dispense = 0.1 #clearance in mm from bottom of tube when dispensing
-
-    right_pipette.pick_up_tip()
-    left_pipette.pick_up_tip()
-    
+    # distribute OM/P3K MM to DNA dest tubes, which have DNA in them
     count = 0
     while count < len(DNA_dests):
         destination_well = DNA_dests[count].split('.')[0]
@@ -306,10 +446,10 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = OM_P3K_MM_vol,
                 source = tuberack2['D2'],
                 dest = dest,
-                #mix_after = (3, OM_P3K_MM_vol),
+                mix_after = (3, OM_P3K_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
-                new_tip = 'never'
+                new_tip = 'always'
                 )
 
         elif OM_P3K_MM_vol > 200:
@@ -317,10 +457,10 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = OM_P3K_MM_vol,
                 source = tuberack2['D2'],
                 dest = dest,
-                #mix_after = (3, 200),
+                mix_after = (3, 200),
                 blow_out = True,
                 blowout_location = 'destination well',
-                new_tip = 'never'
+                new_tip = 'always'
                 )
 
         else:
@@ -328,107 +468,28 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = OM_P3K_MM_vol,
                 source = tuberack2['D2'],
                 dest = dest,
-                #mix_after = (3, 15),
+                mix_after = (3, OM_P3K_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
-                new_tip = 'never'
+                new_tip = 'always'
                 )
-
-    right_pipette.drop_tip()
-    left_pipette.drop_tip()
-
-    ##############################################################################################################################################################
     
-    # Step 2) transfer DNA from source tubes to destination tubes
-
-    ##############################################################################################################################################################
-
-    right_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
-    right_pipette.well_bottom_clearance.dispense = 0.1 #clearance in mm from bottom of tube when dispensing
-    left_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
-    left_pipette.well_bottom_clearance.dispense = 0.1 #clearance in mm from bottom of tube when dispensing
-    
-    count = 0
-    for a in range(len(uL_DNA)):
-        source_well = DNA_sources[a].split('.')[0]
-        destination_well = DNA_dests[a].split('.')[0]
-        source_rack = DNA_sources[a].split('.')[-1]
-        dest_rack = DNA_dests[a].split('.')[-1]
-        DNA_vol = uL_DNA[a]
-
-        if source_rack == '1':
-            source = tuberack1[source_well]
-        elif source_rack == '2':
-            source = tuberack2[source_well]
-        elif source_rack == '3':
-            source = tuberack3[source_well]
-
-        if dest_rack == '1':
-            dest = tuberack1[destination_well]
-        elif dest_rack == '2':
-            dest = tuberack2[destination_well]
-        elif dest_rack == '3':
-            dest = tuberack3[destination_well]
-
-
-        # figure out whether a DNA source tube needs to be mixed or not
-        past_tubes = DNA_sources[0:a]
-        if DNA_sources[a] in past_tubes:
-            mix_param_before = (0,0)
-        elif DNA_sources[a] not in past_tubes:
-            mix_param_before = (3,20)
-            
-        count += 1
-
-
-        # if/else for choosing the appropriate pipette to use
-        if DNA_vol > 20:
-            right_pipette.transfer(
-                volume = DNA_vol,
-                source = source,
-                dest = dest,
-                mix_before = mix_param_before, # mixes source well before aspiration 3 times with 20 uL volume
-                blow_out = True,
-                blowout_location = 'destination well',
-                new_tip = 'always'
-                ) 
-
-        else:
-            left_pipette.transfer(
-                volume = DNA_vol,
-                source = source,
-                dest = dest,
-                mix_before = mix_param_before, # mixes source well before aspiration 3 times with 20 uL volume
-                blow_out = True,
-                blowout_location = 'destination well',
-                new_tip = 'always'
-                )    
-
-
-    # pause robot to allow time to get OM and P3K
-    #test_speaker() ##############################################################################################################################################################
-
-
-    right_pipette.well_bottom_clearance.aspirate = 0.5 #clearance in mm from bottom of tube when aspirating
-    right_pipette.well_bottom_clearance.dispense = 0.5 #clearance in mm from bottom of tube when dispensing
-    left_pipette.well_bottom_clearance.aspirate = 0.5 #clearance in mm from bottom of tube when aspirating
-    left_pipette.well_bottom_clearance.dispense = 0.5 #clearance in mm from bottom of tube when dispensing
-    
-    ##############################################################################################################################################################
-
-    # Step 3) prepare OM/L3K MM and distribute to empty tubes
-
-    ##############################################################################################################################################################
-    
+    # prepare OM/L3K MM
     # pause robot to allow time to get L3K
     #test_speaker() ##############################################################################################################################################################
-    
+
+    ##############################################################################################################################################################
+
+    # Step 3) Prepare OM/L3K MM and distribute to empty tubes
+
+    ##############################################################################################################################################################
+
     # L3000 reagent pipetting
-    if L3K_MM_vol > 20:
+    if L3K_MM_vol >= 20:
         right_pipette.transfer(
             volume = L3K_MM_vol,
-            source = tuberack2['D3'],
-            dest = tuberack2['D1'],
+            source = tuberack3['D3'],
+            dest = tuberack3['D1'],
             blow_out = True,
             blowout_location = 'destination well',
             new_tip = 'always'
@@ -437,8 +498,8 @@ def run(protocol: protocol_api.ProtocolContext):
     else:
         left_pipette.transfer(
             volume = L3K_MM_vol,
-            source = tuberack2['D3'],
-            dest = tuberack2['D1'],
+            source = tuberack3['D3'],
+            dest = tuberack3['D1'],
             blow_out = True,
             blowout_location = 'destination well',
             new_tip = 'always'
@@ -449,8 +510,8 @@ def run(protocol: protocol_api.ProtocolContext):
         if OM_MM_vol > 20 and OM_MM_vol <= 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack2['D6'],
-                dest = tuberack2['D1'],
+                source = tuberack3['D6'],
+                dest = tuberack3['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -460,8 +521,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol > 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack2['D6'],
-                dest = tuberack2['D1'],
+                source = tuberack3['D6'],
+                dest = tuberack3['D1'],
                 mix_after = (3,200),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -471,8 +532,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol <= 20:
             left_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack2['D6'],
-                dest = tuberack2['D1'],
+                source = tuberack3['D6'],
+                dest = tuberack3['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -482,8 +543,8 @@ def run(protocol: protocol_api.ProtocolContext):
     elif OM_MM_vol > 750:
         right_pipette.transfer(
             volume = OM_MM_vol,
-            source = tuberack2['D5'],
-            dest = tuberack2['D6'],
+            source = tuberack3['D5'],
+            dest = tuberack3['D6'],
             blow_out = True,
             blowout_location = 'destination well',
             new_tip = 'always'
@@ -492,8 +553,8 @@ def run(protocol: protocol_api.ProtocolContext):
         if OM_MM_vol > 20 and OM_MM_vol <= 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack2['D6'],
-                dest = tuberack2['D1'],
+                source = tuberack3['D6'],
+                dest = tuberack3['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -503,8 +564,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol > 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack2['D6'],
-                dest = tuberack2['D1'],
+                source = tuberack3['D6'],
+                dest = tuberack3['D1'],
                 mix_after = (3,200),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -514,8 +575,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol <= 20:
             left_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack2['D6'],
-                dest = tuberack2['D1'],
+                source = tuberack3['D6'],
+                dest = tuberack3['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -523,12 +584,6 @@ def run(protocol: protocol_api.ProtocolContext):
                 )     
 
     # distribute OM/L3K MM to empty tubes
-
-    right_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
-    right_pipette.well_bottom_clearance.dispense = 0.1 #clearance in mm from bottom of tube when dispensing
-    left_pipette.well_bottom_clearance.aspirate = 0.1 #clearance in mm from bottom of tube when aspirating
-    left_pipette.well_bottom_clearance.dispense = 0.1 #clearance in mm from bottom of tube when dispensing
-
     right_pipette.pick_up_tip()
     left_pipette.pick_up_tip()
     
@@ -571,7 +626,7 @@ def run(protocol: protocol_api.ProtocolContext):
         if OM_L3K_MM_vol > 20:
             right_pipette.transfer(
                 volume = OM_L3K_MM_vol,
-                source = tuberack2['D1'],
+                source = tuberack3['D1'],
                 dest = dest,
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -580,7 +635,7 @@ def run(protocol: protocol_api.ProtocolContext):
         else:
             left_pipette.transfer(
                 volume = OM_L3K_MM_vol,
-                source = tuberack2['D1'],
+                source = tuberack3['D1'],
                 dest = dest,
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -588,8 +643,7 @@ def run(protocol: protocol_api.ProtocolContext):
                 )   
 
     right_pipette.drop_tip()
-    left_pipette.drop_tip()
-
+    left_pipette.drop_tip()    
 
     ##############################################################################################################################################################
 
@@ -648,7 +702,6 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = mixing_vol,
                 source = source,
                 dest = dest,
-                mix_before = (3,mixing_vol),
                 mix_after = (3,mixing_vol*1.8),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -660,7 +713,6 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = mixing_vol,
                 source = source,
                 dest = dest,
-                mix_before = (3,200),
                 mix_after = (3,200),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -672,7 +724,6 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = mixing_vol,
                 source = source,
                 dest = dest,
-                mix_before = (3,mixing_vol),
                 mix_after = (3,mixing_vol*1.8),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -684,7 +735,6 @@ def run(protocol: protocol_api.ProtocolContext):
                 volume = mixing_vol,
                 source = source,
                 dest = dest,
-                mix_before = (3,mixing_vol),
                 mix_after = (3,20),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -694,7 +744,6 @@ def run(protocol: protocol_api.ProtocolContext):
     # pause robot to allow time to get cells and incubate transfection mixes
     #test_speaker() ##############################################################################################################################################################
     protocol.pause('Now, incubate the mixture for up to 15 mins and get your cells and place in the deck specified in the OT-2 protocol')
-
 
     ##############################################################################################################################################################
 
