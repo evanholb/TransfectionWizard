@@ -109,7 +109,7 @@ LAYOUT_96WELL: Dict[str, Any] = {
     'input_racks': [
         {'slot': 4, 'rows': ['A', 'B', 'C', 'D'], 'cols': list(range(1, 7)), 'labware_type': 'opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 'required': True},
         {'slot': 5, 'rows': ['A', 'B', 'C', 'D'], 'cols': list(range(1, 7)), 'labware_type': 'opentrons_24_tuberack_eppendorf_1.5ml_safelock_snapcap', 'required': True},
-        {'slot': 6, 'rows': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], 'cols': list(range(1, 13)), 'labware_type': 'corning_96_wellplate_360ul_flat', 'required': True},
+        {'slot': 6, 'rows': ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], 'cols': list(range(1, 13)), 'labware_type': 'thermoscientific_96_wellplate_800ul', 'required': True},
     ],
     'output_plates': [
         {'slot': 2, 'rows': ['A', 'B', 'C', 'D'], 'cols': list(range(1, 7)), 'labware_type': 'corning_24_wellplate_3.4ml_flat', 'required': True},
