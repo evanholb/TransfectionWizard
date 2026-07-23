@@ -34,7 +34,7 @@ def run(protocol: protocol_api.ProtocolContext):
     )
 
     wellplate_wrong = protocol.load_labware(
-        "corning_96_wellplate_360ul_flat", location="6"
+        "thermoscientific_96_wellplate_800ul", location="6"
     )
 
     plate1 = protocol.load_labware(
