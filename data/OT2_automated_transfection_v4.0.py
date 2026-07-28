@@ -490,8 +490,8 @@ def run(protocol: protocol_api.ProtocolContext):
     if L3K_MM_vol >= 20:
         right_pipette.transfer(
             volume = L3K_MM_vol,
-            source = tuberack3['D3'],
-            dest = tuberack3['D1'],
+            source = tuberack2['D3'],
+            dest = tuberack2['D1'],
             blow_out = True,
             blowout_location = 'destination well',
             new_tip = 'always'
@@ -500,8 +500,8 @@ def run(protocol: protocol_api.ProtocolContext):
     else:
         left_pipette.transfer(
             volume = L3K_MM_vol,
-            source = tuberack3['D3'],
-            dest = tuberack3['D1'],
+            source = tuberack2['D3'],
+            dest = tuberack2['D1'],
             blow_out = True,
             blowout_location = 'destination well',
             new_tip = 'always'
@@ -512,8 +512,8 @@ def run(protocol: protocol_api.ProtocolContext):
         if OM_MM_vol > 20 and OM_MM_vol <= 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack3['D6'],
-                dest = tuberack3['D1'],
+                source = tuberack2['D6'],
+                dest = tuberack2['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -523,8 +523,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol > 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack3['D6'],
-                dest = tuberack3['D1'],
+                source = tuberack2['D6'],
+                dest = tuberack2['D1'],
                 mix_after = (3,200),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -534,8 +534,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol <= 20:
             left_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack3['D6'],
-                dest = tuberack3['D1'],
+                source = tuberack2['D6'],
+                dest = tuberack2['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -545,8 +545,8 @@ def run(protocol: protocol_api.ProtocolContext):
     elif OM_MM_vol > 750:
         right_pipette.transfer(
             volume = OM_MM_vol,
-            source = tuberack3['D5'],
-            dest = tuberack3['D6'],
+            source = tuberack2['D5'],
+            dest = tuberack2['D6'],
             blow_out = True,
             blowout_location = 'destination well',
             new_tip = 'always'
@@ -555,8 +555,8 @@ def run(protocol: protocol_api.ProtocolContext):
         if OM_MM_vol > 20 and OM_MM_vol <= 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack3['D6'],
-                dest = tuberack3['D1'],
+                source = tuberack2['D6'],
+                dest = tuberack2['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -566,8 +566,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol > 200:
             right_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack3['D6'],
-                dest = tuberack3['D1'],
+                source = tuberack2['D6'],
+                dest = tuberack2['D1'],
                 mix_after = (3,200),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -577,8 +577,8 @@ def run(protocol: protocol_api.ProtocolContext):
         elif OM_MM_vol <= 20:
             left_pipette.transfer(
                 volume = OM_MM_vol,
-                source = tuberack3['D6'],
-                dest = tuberack3['D1'],
+                source = tuberack2['D6'],
+                dest = tuberack2['D1'],
                 mix_after = (3,OM_MM_vol),
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -628,7 +628,7 @@ def run(protocol: protocol_api.ProtocolContext):
         if OM_L3K_MM_vol > 20:
             right_pipette.transfer(
                 volume = OM_L3K_MM_vol,
-                source = tuberack3['D1'],
+                source = tuberack2['D1'],
                 dest = dest,
                 blow_out = True,
                 blowout_location = 'destination well',
@@ -637,7 +637,7 @@ def run(protocol: protocol_api.ProtocolContext):
         else:
             left_pipette.transfer(
                 volume = OM_L3K_MM_vol,
-                source = tuberack3['D1'],
+                source = tuberack2['D1'],
                 dest = dest,
                 blow_out = True,
                 blowout_location = 'destination well',
