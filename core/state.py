@@ -29,6 +29,7 @@ class AppState:
     layout_key: str = '24tube'
     labware_config: Optional[Dict[str, str]] = None
     simulation_output: Optional[str] = None
+    start_well: str = 'A1'
 
     def has_data(self) -> bool:
         """Check if any experiment data exists."""

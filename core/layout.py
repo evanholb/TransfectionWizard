@@ -51,7 +51,8 @@ def get_output_slots(output_plates: List[Dict[str, Any]]) -> List[str]:
 def get_layout_aware_slot_pools(
     layout_key: str,
     layout: Dict[str, Any],
-    reagent_slots: List[str]
+    reagent_slots: List[str],
+    start_well: str = 'A1'
 ) -> Dict[str, List[str]]:
     """
     Get slot pools based on layout type and purpose.
@@ -89,11 +90,25 @@ def get_layout_aware_slot_pools(
 
         for rack_idx, rack in enumerate(layout['input_racks'], start=1):
             rack_slots = []
+
+            started = (rack_idx in [1, 2])  # racks 1 & 2 bypass the gate; only rack 3 is gated
+
             for row in rack['rows']:
                 for col in rack['cols']:
-                    slot = f"{row}{col}.{rack_idx}"
+                    well_label = f"{row}{col}"
+                    slot = f"{well_label}.{rack_idx}"
+
+                    if not started: 
+                        if well_label == start_well: 
+                            started = True 
+
+                        else: 
+                            continue 
+
                     if slot not in reagent_slots:
                         rack_slots.append(slot)
+
+
 
             if rack_idx in [1, 2]:  # Racks 1 & 2 (slots 4 & 5) - 24-tube racks for DNA origins
                 input_dna_slots.extend(rack_slots)
@@ -504,7 +519,7 @@ def _infer_experiment_metadata(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _prepare_slot_configuration(layout_key: str, labware_config: Dict[str, str] = None) -> Dict[str, Any]:
+def _prepare_slot_configuration(layout_key: str, labware_config: Dict[str, str] = None, start_well: str = 'A1') -> Dict[str, Any]:
     """
     Prepare slot pools and tracking sets for layout generation.
 
@@ -526,7 +541,7 @@ def _prepare_slot_configuration(layout_key: str, labware_config: Dict[str, str] 
     reagent_slots = layout['reagent_slots']
 
     # Get slot pools
-    slot_pools = get_layout_aware_slot_pools(layout_key, layout, reagent_slots)
+    slot_pools = get_layout_aware_slot_pools(layout_key, layout, reagent_slots, start_well=start_well)
 
     return {
         'layout': layout,
@@ -594,7 +609,7 @@ def _assign_all_slots(df: pd.DataFrame, layout_key: str, config: Dict[str, Any])
     return df
 
 
-def generate_layout(df: pd.DataFrame, layout_key: str = '24tube', labware_config: Dict[str, str] = None) -> pd.DataFrame:
+def generate_layout(df: pd.DataFrame, layout_key: str = '24tube', labware_config: Dict[str, str] = None, start_well: str = 'A1') -> pd.DataFrame:
     """
     Generate complete layout with all slot assignments.
 
@@ -617,7 +632,7 @@ def generate_layout(df: pd.DataFrame, layout_key: str = '24tube', labware_config
     df = _infer_experiment_metadata(df)
 
     # Step 2: Prepare slot configuration
-    config = _prepare_slot_configuration(layout_key, labware_config)
+    config = _prepare_slot_configuration(layout_key, labware_config, start_well=start_well)
 
     # Step 3: Assign all slots using layout-specific logic
     df = _assign_all_slots(df, layout_key, config)
