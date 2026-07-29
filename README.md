@@ -183,8 +183,8 @@ The application performs comprehensive validation before layout generation. Vali
 - Contents, Concentration, and DNA wanted are **always** required
 
 ### 2. Layout Compatibility Errors
-- **96-well layouts only:** DNA sources must be in rack 1 (DNA parts are expected to be in tubes placed in the 24-tube rack, which is rack 1)
-- **96-well layouts only:** DNA destinations, transfection destinations, and diluted sources must be in 96-well plates (racks 2-3)
+- **96-well layouts only:** DNA sources must be in racks 1 and 2 (DNA parts are expected to be in tubes placed in the 24-tube racks, which are racks 1 and 2)
+- **96-well layouts only:** DNA destinations, transfection destinations, and diluted sources must be in a 96-well plate (rack 3)
 - **24-tube layouts:** No distinction between input rack 1 vs 2-3 (all input racks are 24-tube racks)
 
 ### 3. Slot Conflict Errors
@@ -237,7 +237,7 @@ Dilution is required when the pipetting volume would be too small for accurate h
 ### Dilution in Different Layouts
 
 - **24-tube layout:** Diluted sources assigned from input racks (racks 1-2 required, rack 3 optional)
-- **96-well layout:** Diluted sources assigned from racks 2-3 (well plates only, same pool as DNA destinations)
+- **96-well layout:** Diluted sources assigned from rack 3 (well plate only, same pool as DNA destinations)
 
 ---
 
@@ -270,13 +270,12 @@ Layout type is determined by the currently selected template in the dropdown men
 - **Total Capacity:** 72 input positions (66 available after reagent slots), 48 output wells
 - **Reagent Slots:** D1.3, D2.3, D3.3, D4.3, D5.3, D6.3 (reserved in rack 3)
 
-### 96-Well Layout (High-Throughput)
+### 96-Well Layout (v4.0)
 
-- **Rack 1:** Tube rack (24 positions: A1-D6)
+- **Racks 1-2:** Tube rack (24 positions: A1-D6)
   - Required
   - DNA sources ONLY
-- **Racks 2-3:** 96-well plates (96 positions each: A1-H12)
-  - Rack 2 required, rack 3 optional
+- **Rack 3:** 96-well plates (96 positions each: A1-H12)
   - DNA destinations, transfection destinations, and diluted sources ONLY
 - **Output Plates 1-2:** 24-well plates (A1-D6)
   - Plate 1 required, plate 2 optional
