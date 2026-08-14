@@ -2,18 +2,15 @@
 
 Web interface for neuromorphic circuit experiment design and automation.
 """
-
 from nicegui import ui
-
 from core.state import AppState, TemplateState
-from ui.tabs import build, predict, generate, analyze
+from ui.tabs import build, assembly, predict, generate, analyze
 
 
 def load_static_assets():
     """Load CSS and JavaScript files."""
     with open('static/js/file_operations.js', 'r') as f:
         ui.add_head_html(f'<script>{f.read()}</script>')
-
     with open('static/css/styles.css', 'r') as f:
         ui.add_head_html(f'<style>{f.read()}</style>')
 
@@ -22,7 +19,6 @@ def load_static_assets():
 def main():
     """
     Main application entry point.
-
     Creates state, loads assets, and orchestrates tab creation.
     """
     state = AppState()
@@ -42,10 +38,10 @@ def main():
             'color: white; '
             'text-shadow: 1px 1px 2px rgba(0,0,0,0.2);'
         )
-
         # Create tab navigation inside header
         with ui.tabs().style('color: white;') as tabs:
             build_tab = ui.tab('Design')
+            assembly_tab = ui.tab('Assembly')
             predict_tab = ui.tab('Predict')
             generate_tab = ui.tab('Generate')
             analyze_tab = ui.tab('Analyze')
@@ -54,13 +50,12 @@ def main():
     with ui.tab_panels(tabs, value=build_tab).classes('w-full').style('padding: 20px;'):
         with ui.tab_panel(build_tab):
             build.create_build_tab(state, templates)
-
+        with ui.tab_panel(assembly_tab):
+            assembly.create_assembly_tab(state, templates)
         with ui.tab_panel(predict_tab):
             predict.create_predict_tab(state)
-
         with ui.tab_panel(generate_tab):
             generate.create_generate_tab()
-
         with ui.tab_panel(analyze_tab):
             analyze.create_analyze_tab()
 
