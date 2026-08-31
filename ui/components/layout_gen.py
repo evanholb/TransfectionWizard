@@ -51,7 +51,7 @@ async def handle_generate_layouts(
     # Generate layout
     try:
         # Use detected layout from template
-        augmented_df = generate_layout(state.df, state.layout_key, state.labware_config, state.labware_config,start_well=state.start_well))
+        augmented_df = generate_layout(state.df, state.layout_key, state.labware_config, state.labware_config,start_well=state.start_well)
         plate_layouts = generate_plate_layouts(augmented_df, state.layout_key, state.labware_config)
         excel_file = generate_excel_file(augmented_df, plate_layouts, state.layout_key, state.labware_config)
 
