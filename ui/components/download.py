@@ -157,7 +157,7 @@ def create_download_section(state: AppState, templates: TemplateState):
 
     # Default filenames for each option
     default_filenames = {
-        'All Files (.zip)': 'neuromorphic_experiment',
+        'All Files (.zip)': 'transfection_experiment',
         'Experiment Config (.csv)': 'experiment_config',
         'Opentrons Script (.py)': 'opentrons_protocol',
         'Plate Layouts (.xlsx)': 'plate_layouts',
