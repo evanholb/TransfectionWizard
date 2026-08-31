@@ -15,7 +15,7 @@ async def handle_generate_layouts(
     state: AppState,
     templates: TemplateState,
     grid_manager,
-    on_success: Callable
+    on_success: Callable,
 ):
     """
     Generate plate layouts and outputs.
@@ -51,7 +51,7 @@ async def handle_generate_layouts(
     # Generate layout
     try:
         # Use detected layout from template
-        augmented_df = generate_layout(state.df, state.layout_key, state.labware_config)
+        augmented_df = generate_layout(state.df, state.layout_key, state.labware_config, state.labware_config,start_well=state.start_well))
         plate_layouts = generate_plate_layouts(augmented_df, state.layout_key, state.labware_config)
         excel_file = generate_excel_file(augmented_df, plate_layouts, state.layout_key, state.labware_config)
 
@@ -137,6 +137,7 @@ def create_layout_button(
             'background-color: #50C878 !important; color: white !important;'
         )
 
+        ui.input(label='Start well',value=state.start_well,on_change=lambda e: setattr(state, 'start_well', e.value)).classes('w-32').tooltip('First well used on the 96-well working plate (e.g. A1, A3)')
         # Reset Layout button (conditionally shown)
         reset_button_container = ui.row().classes('gap-0')
 
