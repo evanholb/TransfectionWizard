@@ -40,8 +40,8 @@ def main():
         )
         # Create tab navigation inside header
         with ui.tabs().style('color: white;') as tabs:
-            build_tab = ui.tab('Design')
-            assembly_tab = ui.tab('Assembly')
+            assembly_tab = ui.tab('Assemble')
+            build_tab = ui.tab('Build')
             predict_tab = ui.tab('Predict')
             generate_tab = ui.tab('Generate')
             analyze_tab = ui.tab('Analyze')
