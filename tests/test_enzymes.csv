@@ -1,0 +1,8 @@
+circuit_name,parts,enzyme
+circuit_1,"promoter1,rbs1,gfp,backbone1",BsaI
+circuit_2,"promoter1,rbs2,mCherry,backbone1",BsmBI
+circuit_3,"promoter2,rbs1,gfp,terminator1,backbone1",BsaI
+circuit_4,"promoter2,rbs2,mKO2,terminator1,backbone1",BbsI
+circuit_5,"promoter3,rbs1,mCherry,backbone2",SapI
+circuit_6,"promoter3,rbs3,gfp,terminator2,backbone2",AarI
+circuit_7,"promoter1,rbs3,mKO2,backbone2",
