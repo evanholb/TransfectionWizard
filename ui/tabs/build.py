@@ -76,10 +76,11 @@ def get_ern_info(dna_part: str, row: pd.Series = None) -> dict:
                 site_label = 'PgU target site'
 
     image_path = ERN_IMAGE_MAP.get(site_label, 'static/images/default_target.png')
+    target_main_label = var_label if var_label else site_label
 
     return {
         'type': 'ERN_TARGET',
-        'main_label': site_label,
+        'main_label': target_main_label,
         'image_path': image_path,
         'variable_label': var_label
     }
@@ -245,9 +246,6 @@ def create_build_tab(state: AppState, templates: TemplateState):
                                                         ui.icon('image_not_supported', size='40px').classes('text-slate-400')
                                                     
                                                     ui.label(item['main_label']).classes('text-sm font-semibold text-slate-800 text-center')
-                                                    
-                                                    var_text = item['variable_label'] if item['variable_label'] else 'N/A'
-                                                    ui.label(f"Var: {var_text}").classes('text-xs text-slate-500 font-mono text-center')
 
             # Render Dropdown
             ui.select(
