@@ -236,7 +236,7 @@ def run(protocol: protocol_api.ProtocolContext):
         # Add DNA to slot on tuberack3 (96 well plate)
         left_pipette.transfer(
             volume = source_DNA_vol,
-            source = tuberack3[dilutions[a][0].split('.')[0]],
+            source = tuberack1[dilutions[a][0].split('.')[0]],
             dest = tuberack3[dilutions[a][1].split('.')[0]],
             mix_before = (3,20), # mixes source well before aspiration 3 times with 20 uL volume
             mix_after = (3,5),
