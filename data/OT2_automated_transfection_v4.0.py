@@ -75,7 +75,7 @@ for a in csv_reader:
     uL_L3K_.append(float(a['DNA wanted (ng)']) * L3K * Excess)
 
 # generate abbreviated lists, which combine technical replicates into 1 master mix
-DNA_sources, DNA_dests, L3K_dests, uL_DNA, uL_OM, uL_P3K, uL_L3K, skips = [],[],[],[],[],[],[],[]
+DNA_sources, DNA_dests, L3K_dests, uL_DNA, uL_OM, uL_P3K, uL_L3K, skips, count = [],[],[],[],[],[],[],[],0
 for a in range(len(DNA_sources_)):    
     if a in skips:
         continue
@@ -98,10 +98,43 @@ for a in range(len(DNA_sources_)):
             P3K_volume += uL_P3K_[c]
             L3K_volume += uL_L3K_[c]
 
-        # If volume is below pipette limit, set to pipette limit + excess and set diluted source
+        # If volume is below pipette limit, calculate diluted source concentration to find volume
         if DNA_volume < 1:
-            DNA_volume = 1 * Excess
+
+            already_diluted, diluted_concentrations =[],[]
+            for d in range(len(dilutions)):
+
+                diluted_concentrations.append([dilutions[d][0], float(dilutions[d][-1])])
+
+                dilution_sums = []
+
+                if dilutions[d][0] in already_diluted:
+                    for f in range(len(diluted_concentrations)):
+                        if diluted_concentrations[f][0] == dilutions[d][0]:
+                            diluted_concentrations[-1].append(diluted_concentrations[f][-1])
+                    continue
+
+                else:
+                    dilution_source = dilutions[d][0]
+                    already_diluted.append(dilution_source)
+                    dilution_sums.append(float(dilutions[d][-1]))
+                    for e in range((d+1),len(dilutions)):
+                        if dilutions[e][0] == dilution_source:
+                            dilution_sums.append(float(dilutions[e][-1]))
+
+                    if len(dilution_sums) == 1:
+                        desired_concentration, desired_mass = dilution_sums[0], dilution_sums[0]
+
+                    else:            
+                        desired_concentration = min(dilution_sums)
+                        desired_mass = sum(dilution_sums)
+
+                    diluted_concentrations[d].append(desired_concentration)
+            
+            DNA_volume = diluted_concentrations[count][1]/diluted_concentrations[count][-1] * Excess
             uL_DNA.append(DNA_volume)
+
+            count += 1
 
         else:
             uL_DNA.append(DNA_volume)
@@ -216,34 +249,61 @@ def run(protocol: protocol_api.ProtocolContext):
 
     ##############################################################################################################################################################
 
+    already_diluted =[]
     for a in range(len(dilutions)):
-        desired_concentration = float(dilutions[a][-1])
 
-        # make 10 uL working stock
-        source_DNA_vol = (desired_concentration*10)/float(dilutions[a][2])
-        water_vol = 10 - source_DNA_vol
+        dilution_sums = []
 
-        # Add water to slot on tuberack3 (96 well plate)
-        left_pipette.transfer(
-            volume = water_vol,
-            source = tuberack2['C6'],
-            dest = tuberack3[dilutions[a][1].split('.')[0]],
-            blow_out = True,
-            blowout_location = 'destination well',
-            new_tip = 'always'
-            )
+        if dilutions[a][0] in already_diluted:
+            continue
 
-        # Add DNA to slot on tuberack3 (96 well plate)
-        left_pipette.transfer(
-            volume = source_DNA_vol,
-            source = tuberack1[dilutions[a][0].split('.')[0]],
-            dest = tuberack3[dilutions[a][1].split('.')[0]],
-            mix_before = (3,20), # mixes source well before aspiration 3 times with 20 uL volume
-            mix_after = (3,5),
-            blow_out = True,
-            blowout_location = 'destination well',
-            new_tip = 'always'
-            )      
+        else:
+            dilution_source = dilutions[a][0]
+            already_diluted.append(dilution_source)
+            dilution_sums.append(float(dilutions[a][-1]))
+            for b in range((a+1),len(dilutions)):
+                if dilutions[b][0] == dilution_source:
+                    dilution_sums.append(float(dilutions[b][-1]))
+
+            if len(dilution_sums) == 1:
+                desired_concentration, desired_mass = dilution_sums[0], dilution_sums[0]
+
+            else:            
+                desired_concentration = min(dilution_sums)
+                desired_mass = sum(dilution_sums)
+
+            # make working stock: 10 uL minimum volume; if > 10 uL is required, use an excess of 10 uL
+
+            if desired_mass/desired_concentration < 10:
+                source_DNA_vol = (desired_concentration*10)/float(dilutions[a][2])
+                water_vol = 10 - source_DNA_vol
+            else:
+                total_vol = desired_mass/desired_concentration + 10
+                source_DNA_vol = (desired_concentration*total_vol)/float(dilutions[a][2])
+                water_vol = total_vol - source_DNA_vol
+
+            # Add water to slot on tuberack3 (96 well plate)
+            left_pipette.transfer(
+                volume = water_vol,
+                source = tuberack2['C6'],
+                dest = tuberack3[dilutions[a][1].split('.')[0]],
+                blow_out = True,
+                blowout_location = 'destination well',
+                new_tip = 'always'
+                )
+
+            # Add DNA to slot on tuberack3 (96 well plate)
+            left_pipette.transfer(
+                volume = source_DNA_vol,
+                source = tuberack1[dilutions[a][0].split('.')[0]],
+                dest = tuberack3[dilutions[a][1].split('.')[0]],
+                mix_before = (3,20), # mixes source well before aspiration 3 times with 20 uL volume
+                mix_after = (3,5),
+                blow_out = True,
+                blowout_location = 'destination well',
+                new_tip = 'always'
+                )      
+
 
     ##############################################################################################################################################################
 
