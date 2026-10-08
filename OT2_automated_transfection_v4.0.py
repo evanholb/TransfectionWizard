@@ -136,12 +136,6 @@ for a in range(len(DNA_sources_)):
 
             count += 1
 
-            print(diluted_concentrations)
-
-
-            #DNA_volume = 1 * Excess
-            #uL_DNA.append(DNA_volume)
-
         else:
             uL_DNA.append(DNA_volume)
 
