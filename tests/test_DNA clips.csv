@@ -1,0 +1,3 @@
+circuit_name,parts,enzyme
+circuit_1,"promoter1,rbs1,gfp,backbone1",BsaI
+circuit_2,"promoter1,rbs2,mCherry,backbone1",
