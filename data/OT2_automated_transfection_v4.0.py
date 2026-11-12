@@ -816,7 +816,7 @@ def run(protocol: protocol_api.ProtocolContext):
     # specify custom pipette parameters for forward transfection (to not disturb monolayer)
     right_pipette.flow_rate.dispense = 50 #in uL/sec; slower to not disturb monolayer
     right_pipette.well_bottom_clearance.dispense = 2 #clearance in mm from bottom of tube when dispensing
-    left_pipette.well_bottom_clearance.dispense = 2 #clearance in mm from bottom of tube when dispensing
+    left_pipette.well_bottom_clearance.dispense = 0.75 #clearance in mm from bottom of tube when dispensing
     
     count = 0
     while count < len(plate_dests):

@@ -71,7 +71,7 @@ def render_protocol_ui(protocol_name: str, state: AppState, templates: TemplateS
             tiprack_slot_2 = ui.select(['1', '2', '3', '4', '5', '6'], value='2').classes('w-full')
         with ui.column().classes('gap-0'):
             ui.label('Tip Rack 3 Deck Slot').classes('font-bold text-sm')
-            tiprack_slot_3 = ui.select(['1', '2', '3', '4', '5', '6'], value='3').classes('w-full')
+            tiprack_slot_3 = ui.select(['1', '2', '3', '4', '5', '6'], value='4').classes('w-full')
 
     pipette_warning = ui.label('').classes('text-red-500 text-sm')
     ui.separator()
@@ -79,7 +79,7 @@ def render_protocol_ui(protocol_name: str, state: AppState, templates: TemplateS
     ui.label('Step 3: Cloning Protocol').classes('text-lg font-semibold')
     with ui.expansion('', icon='help_outline').classes('w-full'):
         ui.label(
-            'For each reaction, in order: 1) DNA parts, 2) Water (if > 1 uL is needed), 3) T4 ligase buffer, 4) T4 ligase, 5) enzyme, '
+            'For each reaction, in order: 1) DNA parts, 2) Water (if >= 1 uL is needed), 3) T4 ligase buffer, 4) T4 ligase, 5) enzyme, '
             'then everything is mixed at 75% of the total reaction volume. '
             'Enzyme choice can be set per reaction in the CSV (Step 4).'
         ).classes('text-gray-500 text-sm')
@@ -90,7 +90,7 @@ def render_protocol_ui(protocol_name: str, state: AppState, templates: TemplateS
         buffer_volume = ui.number('T4 ligase buffer volume (uL)', value=2)
         with ui.column().classes('gap-0'):
             ui.label('Temperature Module Deck Slot').classes('font-bold text-sm')
-            temp_module_slot = ui.select(['1', '2', '3', '4', '5', '6'], value='4').classes('w-full')
+            temp_module_slot = ui.select(['1', '2', '3', '4', '5', '6'], value='3').classes('w-full')
 
     with ui.column().classes('gap-0'):
         ui.label('DNA Parts Rack Deck Slot').classes('font-bold text-sm')
@@ -337,7 +337,7 @@ def render_protocol_ui(protocol_name: str, state: AppState, templates: TemplateS
         )
 
         water_volume = max(0, total_volume.value - used_volume)
-        if water_volume > 1:
+        if water_volume >= 1:
             reagents_detail = [{'name': 'Water', 'well': WATER_WELL, 'volume_uL': water_volume}]
         else:
             reagents_detail = []
@@ -817,7 +817,7 @@ def render_protocol_ui(protocol_name: str, state: AppState, templates: TemplateS
     pipette.aspirate({enzyme['volume_uL']}, reagent_plate["{enzyme['well']}"])
     pipette.dispense({enzyme['volume_uL']}, reaction_plate["{well}"])
     pipette.well_bottom_clearance.aspirate = 10.5
-    pipette.mix(repetitions=3, volume={mix_volume}, location=reaction_plate["{well}"])
+    pipette.mix(repetitions=3, volume={mix_volume}, location=reaction_plate["{well}"].bottom(10.5))
     pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
@@ -874,7 +874,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     total_vol = {total_vol}
 
-    thermocycler = protocol.load_module(module_name="thermocyclerModuleV2")
+    thermocycler = protocol.load_module(module_name="thermocyclerModuleV1")
     reaction_plate = thermocycler.load_labware(name="nest_96_wellplate_100ul_pcr_full_skirt")
 
     temp_module = protocol.load_module(module_name="temperature module gen2", location="{temp_slot}")
@@ -899,6 +899,7 @@ def run(protocol: protocol_api.ProtocolContext):
     ]
     thermocycler.set_block_temperature(temperature=37, hold_time_seconds=1500)
     thermocycler.execute_profile(steps=profile, repetitions=40, block_max_volume={total_vol})
+    thermocycler.set_block_temperature(temperature=37, hold_time_seconds=25*60)
     thermocycler.set_block_temperature(temperature=65, hold_time_minutes=10)
     thermocycler.set_block_temperature(temperature=4)
 {capture_done_line}'''
@@ -1174,7 +1175,7 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
             tiprack_slot_2 = ui.select(['1', '2', '3', '4', '5', '6'], value='2').classes('w-full')
         with ui.column().classes('gap-0'):
             ui.label('Tip Rack 3 Deck Slot').classes('font-bold text-sm')
-            tiprack_slot_3 = ui.select(['1', '2', '3', '4', '5', '6'], value='3').classes('w-full')
+            tiprack_slot_3 = ui.select(['1', '2', '3', '4', '5', '6'], value='4').classes('w-full')
 
     pipette_warning = ui.label('').classes('text-red-500 text-sm')
     ui.separator()
@@ -1182,7 +1183,7 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     ui.label('Step 3: Cloning Protocol').classes('text-lg font-semibold')
     with ui.expansion('', icon='help_outline').classes('w-full'):
         ui.label(
-            'For each reaction, in order: 1) DNA parts, 2) Water (if > 1 uL is needed), 3) T4 ligase buffer, 4) T4 ligase, 5) enzyme, '
+            'For each reaction, in order: 1) DNA parts, 2) Water (if >= 1 uL is needed), 3) T4 ligase buffer, 4) T4 ligase, 5) enzyme, '
             'then everything is mixed at 75% of the total reaction volume. '
             'Enzyme choice can be set per reaction in the CSV (Step 4).'
         ).classes('text-gray-500 text-sm')
@@ -1193,7 +1194,7 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
         buffer_volume = ui.number('T4 ligase buffer volume (uL)', value=1)
         with ui.column().classes('gap-0'):
             ui.label('Temperature Module Deck Slot').classes('font-bold text-sm')
-            temp_module_slot = ui.select(['1', '2', '3', '4', '5', '6'], value='4').classes('w-full')
+            temp_module_slot = ui.select(['1', '2', '3', '4', '5', '6'], value='3').classes('w-full')
 
     with ui.column().classes('gap-0'):
         ui.label('DNA Parts Rack Deck Slot').classes('font-bold text-sm')
@@ -1457,7 +1458,7 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
         )
 
         water_volume = max(0, total_volume.value - used_volume)
-        if water_volume > 1:
+        if water_volume >= 1:
             reagents_detail = [{'name': 'Water', 'well': WATER_WELL, 'volume_uL': water_volume}]
         else:
             reagents_detail = []
@@ -1948,6 +1949,8 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate({reagent['volume_uL']}, reagent_plate["{reagent['well']}"])
     pipette.dispense({reagent['volume_uL']}, reaction_plate["{well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{well}"].bottom(10.5+5))
     pipette.drop_tip()
 '''
 
@@ -1959,8 +1962,12 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate({enzyme['volume_uL']}, reagent_plate["{enzyme['well']}"])
     pipette.dispense({enzyme['volume_uL']}, reaction_plate["{well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{well}"].bottom(10.5+5))
     pipette.well_bottom_clearance.aspirate = 10.5
-    pipette.mix(repetitions=3, volume={mix_volume}, location=reaction_plate["{well}"])
+    pipette.mix(repetitions=3, volume={mix_volume}, location=reaction_plate["{well}"].bottom(10.5))
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{well}"].bottom(10.5+5))
     pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
@@ -2005,16 +2012,28 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(1, reagent_plate["{recbcd_well}"])
     pipette.dispense(1, reaction_plate["{initial_well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{initial_well}"].bottom(10.5+5))
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.mix(repetitions=3, volume=8, location=reaction_plate["{initial_well}"].bottom(10.5))
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{initial_well}"].bottom(10.5+5))
+    pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
 
             if initial_well and rca_well:
                 # 2. RCA steps: transfer 4 uL to new thermocycler well, then add reagents
                 RCA_steps += f'''
+    pipette.well_bottom_clearance.aspirate = 10.5
     pipette.pick_up_tip()
     pipette.aspirate(4, reaction_plate["{initial_well}"])
+    pipette.move_to(reaction_plate["{rca_well}"].top(20))
     pipette.dispense(4, reaction_plate["{rca_well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+5))
     pipette.drop_tip()
+    pipette.well_bottom_clearance.aspirate = -1
 
     pipette.pick_up_tip()
     pipette.aspirate(2, reagent_plate["{equiphi_buf_well}"])
@@ -2039,6 +2058,11 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(1, reagent_plate["{WATER_WELL}"])
     pipette.dispense(1, reaction_plate["{rca_well}"])
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.mix(repetitions=3, volume=10, location=reaction_plate["{rca_well}"].bottom(10.5))
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+6))
+    pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
 
@@ -2047,6 +2071,13 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(2, reagent_plate["{equiphi_well}"])
     pipette.dispense(2, reaction_plate["{rca_well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+6))
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.mix(repetitions=3, volume=10, location=reaction_plate["{rca_well}"].bottom(10.5))
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+6))
+    pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
 
@@ -2055,6 +2086,8 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(2, reagent_plate["{nt_bstnbi_well}"])
     pipette.dispense(2, reaction_plate["{rca_well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+8.5))
     pipette.drop_tip()
 
     pipette.pick_up_tip()
@@ -2070,7 +2103,111 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(11.5, reagent_plate["{WATER_WELL}"])
     pipette.dispense(11.5, reaction_plate["{rca_well}"])
+    
+    # specify pipette speed
+    pipette.flow_rate.aspirate = 20 #in uL/sec
+    pipette.flow_rate.dispense = 20 #in uL/sec
+
+    # do mixing and pause on aspiration and dispense x5; move pipette tip each time
+
+    pipette.well_bottom_clearance.aspirate = 10.5+5
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.dispense = 10.5
+    pipette.dispense(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+    
+    pipette.well_bottom_clearance.dispense = 10.5+5
+    pipette.dispense(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.aspirate = 10.5+5
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.dispense = 10.5
+    pipette.dispense(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.dispense = 10.5+5
+    pipette.dispense(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    pipette.well_bottom_clearance.dispense = 10.5+5
+    pipette.dispense(20, reaction_plate["B1"])    
+    protocol.delay(seconds=2)
+    pipette.move_to(reaction_plate["B1"].top(20))  # Fully lifts tip out of well A1
+    protocol.delay(seconds=2)
+
+    # final mix x5
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.well_bottom_clearance.dispense = 10.5
+    
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.dispense(20, reaction_plate["B1"])    
+    protocol.delay(seconds=2)
+
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.dispense(20, reaction_plate["B1"])    
+    protocol.delay(seconds=2)
+
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.dispense(20, reaction_plate["B1"])    
+    protocol.delay(seconds=2)
+
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.dispense(20, reaction_plate["B1"])    
+    protocol.delay(seconds=2)
+
+    pipette.aspirate(20, reaction_plate["B1"])
+    protocol.delay(seconds=2)
+    pipette.dispense(20, reaction_plate["B1"])    
+    protocol.delay(seconds=2)
+    
+    pipette.blow_out(reaction_plate["B1"].bottom(10.5+8.5))
+    pipette.well_bottom_clearance.dispense = 10.5
+    pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
+
+    # specify pipette speed back to defaults
+    pipette.flow_rate.aspirate = 7.56 #in uL/sec
+    pipette.flow_rate.dispense = 7.56 #in uL/sec
+
 '''
 
                 # 5. Ligation steps: 6 uL ATP and 2 uL T4 Ligase
@@ -2083,6 +2220,13 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(2, reagent_plate["{LIGASE_WELL}"])
     pipette.dispense(2, reaction_plate["{rca_well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+10))
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.mix(repetitions=3, volume=20, location=reaction_plate["{rca_well}"].bottom(10.5))
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+10))
+    pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
 
@@ -2091,6 +2235,13 @@ def render_dna_clips_ui(state: AppState, templates: TemplateState):
     pipette.pick_up_tip()
     pipette.aspirate(2, reagent_plate["{t5_exo_well}"])
     pipette.dispense(2, reaction_plate["{rca_well}"])
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+10))
+    pipette.well_bottom_clearance.aspirate = 10.5
+    pipette.mix(repetitions=3, volume=20, location=reaction_plate["{rca_well}"].bottom(10.5))
+    protocol.delay(seconds=2)
+    pipette.blow_out(reaction_plate["{rca_well}"].bottom(10.5+10))
+    pipette.well_bottom_clearance.aspirate = -1
     pipette.drop_tip()
 '''
 
@@ -2141,7 +2292,7 @@ def run(protocol: protocol_api.ProtocolContext):
 
     total_vol = {total_vol}
 
-    thermocycler = protocol.load_module(module_name="thermocyclerModuleV2")
+    thermocycler = protocol.load_module(module_name="thermocyclerModuleV1")
     reaction_plate = thermocycler.load_labware(name="nest_96_wellplate_100ul_pcr_full_skirt")
 
     temp_module = protocol.load_module(module_name="temperature module gen2", location="{temp_slot}")
@@ -2157,22 +2308,22 @@ def run(protocol: protocol_api.ProtocolContext):
     thermocycler.open_lid()
     pipette.well_bottom_clearance.dispense = 10.5
     pipette.well_bottom_clearance.aspirate = -1
-{precool_start_line}{reaction_steps}{capture_loaded_line}{precool_wait_line}
+{precool_start_line}{precool_wait_line}{reaction_steps}{capture_loaded_line}
     thermocycler.close_lid()
     thermocycler.set_lid_temperature(temperature=105)
-{temp_module_post_line}
     profile = [
         {{"temperature": 37, "hold_time_seconds": 60}},
         {{"temperature": 16, "hold_time_seconds": 60}},
     ]
-    thermocycler.set_block_temperature(temperature=37, hold_time_seconds=25*6, block_max_volume=total_vol)
-    thermocycler.execute_profile(steps=profile, repetitions=40, block_max_volume={total_vol})
+    thermocycler.execute_profile(steps=profile, repetitions=30, block_max_volume={total_vol})
+    thermocycler.set_block_temperature(temperature=37, hold_time_seconds=25*60, block_max_volume=total_vol)
+    thermocycler.set_block_temperature(temperature=65, hold_time_seconds=10*60, block_max_volume=total_vol)
     thermocycler.set_block_temperature(temperature=4, block_max_volume=total_vol)
 
     thermocycler.open_lid()
 {exonuclease_steps}
     thermocycler.close_lid()
-    thermocycler.set_lid_temperature(temperature=105)
+    thermocycler.set_lid_temperature(temperature=95)
     thermocycler.set_block_temperature(temperature=37, hold_time_seconds=90*60, block_max_volume=total_vol+2)
     thermocycler.set_block_temperature(temperature=75, hold_time_seconds=30*60, block_max_volume=total_vol+2)
     thermocycler.set_block_temperature(temperature=4, block_max_volume=total_vol+2)
@@ -2195,7 +2346,7 @@ def run(protocol: protocol_api.ProtocolContext):
     thermocycler.open_lid()
 {Digest_Anneal_steps}
     thermocycler.close_lid()
-    thermocycler.set_lid_temperature(temperature=85)
+    thermocycler.set_lid_temperature(temperature=105)
     thermocycler.set_block_temperature(temperature=55, hold_time_seconds=2*60*60, block_max_volume=50)
     thermocycler.set_block_temperature(temperature=85, hold_time_seconds=20*60, block_max_volume=50)
     thermocycler.set_block_temperature(temperature=74, hold_time_seconds=120, block_max_volume=50, ramp_rate = 0.1)
@@ -2204,13 +2355,13 @@ def run(protocol: protocol_api.ProtocolContext):
     thermocycler.open_lid()
 {Ligation_steps}
     thermocycler.close_lid()
-    thermocycler.set_lid_temperature(temperature=85)
+    thermocycler.set_lid_temperature(temperature=40)
     thermocycler.set_block_temperature(temperature=25, hold_time_seconds=60*60, block_max_volume=58)
 
     thermocycler.open_lid()
 {ExoClean_steps}
     thermocycler.close_lid()
-    thermocycler.set_lid_temperature(temperature=85)
+    thermocycler.set_lid_temperature(temperature=50)
     thermocycler.set_block_temperature(temperature=37, hold_time_seconds=5*60*60, block_max_volume=60)
     thermocycler.set_block_temperature(temperature=4, block_max_volume=60)
 
