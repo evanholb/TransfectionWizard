@@ -98,7 +98,7 @@ for a in range(len(DNA_sources_)):
 # raise SystemExit if any DNA volumes are too small (< 1 uL)
 for a in range(len(uL_DNA)):
     if uL_DNA[a] < 1:
-        print('DNA concentration in tube', tube_names[a], 'is too high (volume required is below the minimum of 1 uL). Please dilute DNA so at least 1 uL can be used.')
+        print('DNA concentration in tube', tube_names[a], 'is too high (volume required is below the minimum of 1 uL). Please dilute DNA so at least 1 uL can be used. NOTE: only v4.0+ support automatic dilutions')
         raise SystemExit('Program halted. See above for details.')
 
 # generate list of wells in a 24-well plate for later
